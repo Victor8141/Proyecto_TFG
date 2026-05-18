@@ -1,6 +1,8 @@
 package com.example.proyectotfg.ui
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -62,6 +64,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import coil.compose.AsyncImage
 import com.example.proyectotfg.R
 import com.example.proyectotfg.datos.EntidadNotaPlanta
@@ -180,6 +183,19 @@ fun PantallaDetalleLocal(
             val path = guardarBitmapEnGaleriaLocal(context, it)
             huertoViewModel.anadirFoto(plantaId, path)
             Toast.makeText(context, "Foto añadida a la galería", Toast.LENGTH_SHORT).show()
+        } ?: Toast.makeText(context, "Cámara no disponible", Toast.LENGTH_SHORT).show()
+    }
+
+    fun abrirCamaraSiDisponible() {
+        val permisoConcedido = ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.CAMERA
+        ) == PackageManager.PERMISSION_GRANTED
+
+        if (permisoConcedido) {
+            cameraLauncher.launch(null)
+        } else {
+            Toast.makeText(context, "Cámara no disponible", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -279,7 +295,7 @@ fun PantallaDetalleLocal(
 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text("Galería", modifier = Modifier.weight(1f), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-                FilledTonalButton(onClick = { cameraLauncher.launch(null) }) {
+                FilledTonalButton(onClick = { abrirCamaraSiDisponible() }) {
                     Icon(Icons.Default.PhotoCamera, contentDescription = null)
                     Spacer(Modifier.size(8.dp))
                     Text("Foto")
