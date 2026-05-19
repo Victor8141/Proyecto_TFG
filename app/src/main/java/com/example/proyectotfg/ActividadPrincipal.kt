@@ -19,10 +19,11 @@ import com.example.proyectotfg.ui.NavegacionApp
 import com.example.proyectotfg.ui.theme.ProyectoTFGTheme
 
 class ActividadPrincipal : ComponentActivity() {
+    private var permisosPedidosEnEstePrimerPlano = false
+
     // Inicia la aplicacion y carga la interfaz principal.
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        pedirPermisosAplicacion()
         enableEdgeToEdge()
         setContent {
             ProyectoTFGTheme {
@@ -36,6 +37,20 @@ class ActividadPrincipal : ComponentActivity() {
         }
     }
 
+    // Al volver a entrar en la app se vuelven a pedir los permisos pendientes.
+    override fun onResume() {
+        super.onResume()
+        if (!permisosPedidosEnEstePrimerPlano) {
+            permisosPedidosEnEstePrimerPlano = true
+            pedirPermisosAplicacion()
+        }
+    }
+
+    // Permite que al salir y volver a entrar se puedan pedir otra vez.
+    override fun onStop() {
+        super.onStop()
+        permisosPedidosEnEstePrimerPlano = false
+    }
 
     // Pide los permisos necesarios para camara, notificaciones e imagenes.
     private fun pedirPermisosAplicacion() {
